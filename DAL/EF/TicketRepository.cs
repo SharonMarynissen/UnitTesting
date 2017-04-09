@@ -15,7 +15,7 @@ namespace SC.DAL.EF
         public TicketRepository()
         {
             ctx = new SupportCenterDbContext();
-            //ctx.Database.Initialize(false); //initializatie enkel uitvoeren indien nog niet eerder uitgevoerd.
+            ctx.Database.Initialize(false); //initializatie enkel uitvoeren indien nog niet eerder uitgevoerd.
         }
 
         public Ticket CreateTicket(Ticket ticket)
