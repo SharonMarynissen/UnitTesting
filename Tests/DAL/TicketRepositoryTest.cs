@@ -9,8 +9,16 @@ namespace Tests
 {
     [TestClass]
     public class TicketRepositoryTest
-    { 
-        [TestMethod]
+    {
+        //private TestContext testContextInstance;
+        //public TestContext TestContext
+        //{
+        //    get { return testContextInstance; }
+        //    set { testContextInstance = value; }
+        //}
+
+        //[DataSource(@"Data Source=.\SQLSERVER2012; Initial Catalog=SupportCenterDB_EFCodeFirst; Provider=System.Data.SqlClient", "Ticket")]
+        [TestMethod()]
         public void TicketRepositoryIsNotNull()
         {
             ITicketRepository repo = new TicketRepository();
