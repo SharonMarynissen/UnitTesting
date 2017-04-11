@@ -58,8 +58,6 @@ namespace SC.DAL.EF
 
         public void UpdateTicket(Ticket ticket)
         {
-            Ticket t = this.ReadTicket(ticket.TicketNumber);
-            t = ticket;
             //Zeker zijn dat ticket gekend is door context en dat die de staat 
             //Modified krijgt vooraleer de database aan te passen.
             ctx.Entry(ticket).State = System.Data.Entity.EntityState.Modified;
@@ -68,8 +66,15 @@ namespace SC.DAL.EF
 
         public void UpdateTicketStateToClosed(int ticketNumber)
         {
-            Ticket t = this.ReadTicket(ticketNumber);
-            t.State = TicketState.Closed;
+            Ticket ticket = ctx.Tickets.Find(ticketNumber);
+            if (object.Equals(null, ticket))
+            {
+                throw new KeyNotFoundException("Ticket not found");
+            }
+            else
+            {
+                ticket.State = TicketState.Closed;
+            }
             ctx.SaveChanges();
         }
     }

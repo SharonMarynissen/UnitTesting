@@ -154,6 +154,12 @@ namespace SC.DAL
       responses.Add(response);
       return response;
     }
-    #endregion
+
+      public void UpdateTicketStateToClosed(int ticketNumber)
+      {
+          ReadTicket(ticketNumber).State=TicketState.Closed;
+      }
+
+      #endregion
   }
 }
