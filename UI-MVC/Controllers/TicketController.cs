@@ -10,8 +10,17 @@ namespace SC.UI.Web.Mvc.Controllers
 {
     public class TicketController : Controller
     {
-        private readonly ITicketManager mgr = new TicketManager();
+        private readonly ITicketManager mgr;
 
+        public TicketController()
+        {
+            mgr = new TicketManager();
+        }
+
+        public TicketController(ITicketManager mgr)
+        {
+            this.mgr = mgr;
+        }
         // GET: Ticket
         public ActionResult Index()
         {
