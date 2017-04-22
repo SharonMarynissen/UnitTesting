@@ -31,7 +31,16 @@ namespace SC.BL
 
         public Ticket GetTicket(int ticketNumber)
         {
-            return repo.ReadTicket(ticketNumber);
+            if (ticketNumber < 0)
+            {
+                throw new ArgumentException("Invalid id!");
+            }
+            Ticket t = repo.ReadTicket(ticketNumber);
+            if (t==null)
+            {
+                throw new KeyNotFoundException(String.Format("No ticket with id {0} was found!", ticketNumber));
+            }
+            return t;
         }
 
         public Ticket AddTicket(int accountId, string question)
