@@ -147,14 +147,14 @@ namespace Tests
             _repository.Received(1).ReadTicketResponsesOfTicket(5);
         }
 
-        [Fact]
-        public void AddTicketResponseWithInvalidResponseThrowsValidationException()
+        [Theory, MemberData(nameof(AddTicketResponseWithInvalidResponseThrowsValidationExceptionMemberData))]
+        public void AddTicketResponseWithInvalidResponseThrowsValidationException(string useCase, string response)
         {
             _repository = Substitute.For<ITicketRepository>();
             _repository.ReadTicket(5).Returns(new Ticket());
             _mgr = new TicketManager(_repository);
 
-            Assert.Throws<ValidationException>(() => _mgr.AddTicketResponse(5, "", true));
+            Assert.Throws<ValidationException>(() => _mgr.AddTicketResponse(5, response, true));
         }
 
         [Fact]
@@ -247,6 +247,13 @@ namespace Tests
             yield return new object[] { "AddTicketWithTooLongQuestionThrowsValidationException","Deze vraag is hoe dan ook veel te lang en zou daarom een validatiefout moeten opgooien. Ik ben eens nieuwsgierig of dit inderdaad het geval zal zijn, maar het zou eigenlijk wel moeten." };
             yield return new object[] { "AddTicketWithEmptyStringAsQuestionThrowsValidationException","" };
             yield return new object[] { "AddTicketWithNullAsQuestionThrowsValidationException",null };
+        }
+
+        public static IEnumerable<object[]> AddTicketResponseWithInvalidResponseThrowsValidationExceptionMemberData()
+        {
+            yield return new[] { "AddTicketResponseWithEmptyStringAsResponse", "" };
+            yield return new[] { "AddTicketResponseWithTooLongStringAsResponse", "This response should be way too long, I have no clue what to type so I just keep typing some random words. Testing with xUnit is a lot easier than testin with MUTF, because you can use a Theory with MemberData that makes it possible to run a test multiple times with different parameters. This comes in handy when testing edge cases." };
+            yield return new[] { "AddTicketResponseWithNullAsResponse", null };
         }
     }
 }
