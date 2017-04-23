@@ -51,15 +51,14 @@ namespace SC.DAL.EF
 
         public IEnumerable<Ticket> ReadTickets()
         {
-            //return ctx.Tickets.ToList();  //Lazy loading : Responses virtual gemaakt in Ticket
             return ctx.Tickets.Include(t => t.Responses);
-
         }
 
         public void UpdateTicket(Ticket ticket)
         {
-            //Zeker zijn dat ticket gekend is door context en dat die de staat 
-            //Modified krijgt vooraleer de database aan te passen.
+            if (ticket == null) throw new ArgumentNullException();
+            if (this.ReadTicket(ticket.TicketNumber) == null) throw new KeyNotFoundException();
+
             ctx.Entry(ticket).State = System.Data.Entity.EntityState.Modified;
             ctx.SaveChanges();
         }

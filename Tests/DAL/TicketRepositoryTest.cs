@@ -57,22 +57,9 @@ namespace Tests.EF
             Assert.AreEqual(t.Text, added.Text);
         }
 
-        [TestMethod]
-        public void CreateTicketWithNullAsTicketThrowsException()
-        {
-            try
-            {
-                _repo.CreateTicket(null);
-                Assert.Fail("This should throw an exception, you don't want to add NULL to the database");
-            }
-            catch (AssertFailedException e) //I have to catch this, because this is also an exception!
-            {
-                Assert.Fail("This should throw an exception, you don't want to add NULL to the database");
-            }
-            catch (Exception e)
-            {
-                Assert.IsTrue(true, "An exception was thrown while adding ticket NULL to the database. This is good.");
-            }
+        [TestMethod, ExpectedException(typeof(ArgumentNullException))]
+        public void CreateTicket_TicketIsNull_ThrowsException() {
+            _repo.CreateTicket(null);
         }
 
         [TestMethod]
@@ -91,7 +78,7 @@ namespace Tests.EF
         }
 
         [TestMethod]
-        public void ReadTicket_SearchTicketById_TicketTextEqualsExpectedString()
+        public void ReadTicketWithExistingIdReturnsExcpectedTicket()
         {
             var expected = "This should be the message";
             var id = _repo.CreateTicket(new Ticket() { Text = expected, DateOpened = DateTime.Now }).TicketNumber;
@@ -100,13 +87,13 @@ namespace Tests.EF
         }
 
         [TestMethod]
-        public void ReadTicket_UnexistingId_ReturnsNull()
+        public void ReadTicketWithUnexistingIdReturnsNull()
         {
             Assert.IsNull(_repo.ReadTicket(int.MaxValue));
         }
 
         [TestMethod]
-        public void UpdateTicket_UpdateExistingTicket_TextOfTicketIsUpdatedToNewValue()
+        public void UpdateTicketUpdateExistingTicketTextOfTicketIsUpdatedToNewValueAfterUpdate()
         {
             var originalText = "This was the original message";
             var newText = "This is the new message";
@@ -121,20 +108,28 @@ namespace Tests.EF
             Assert.AreEqual(_repo.ReadTicket(id).Text, newText);
         }
 
-        [TestMethod, ExpectedException(typeof(ArgumentNullException))]
-        public void CreateTicket_TicketIsNull_ThrowsException()
+        [TestMethod, ExpectedException(typeof(KeyNotFoundException))]
+        public void UpdateTicketNonExistingTicketThrowsKeyNotFoundException()
         {
-            _repo.CreateTicket(null);
+            Ticket t = new Ticket
+            {
+                TicketNumber = Int32.MaxValue,
+                Text = "This ticket is not in the database",
+                AccountId = 987,
+                State = TicketState.Answered,
+                DateOpened = DateTime.Now,
+            };
+            _repo.UpdateTicket(t);
         }
 
         [TestMethod, ExpectedException(typeof(ArgumentNullException))]
-        public void UpdateTicket_TicketIsNull_ThrowsException()
+        public void UpdateTicketTicketIsNullThrowsArgumentNullException()
         {
             _repo.UpdateTicket(null);
         }
 
         [TestMethod]
-        public void UpdateTicketStateToClosed_OnExistingTicket_SetsStateToClosed()
+        public void UpdateTicketStateToClosedOnExistingTicketSetsStateToClosed()
         {
             var id = _repo.CreateTicket(new Ticket() { DateOpened = DateTime.Now, Text = "Some text" }).TicketNumber;
             Assert.AreNotEqual(_repo.ReadTicket(id).State, TicketState.Closed);
@@ -143,7 +138,7 @@ namespace Tests.EF
         }
 
         [TestMethod, ExpectedException(typeof(KeyNotFoundException), "This Should throw a NullReferenceException")]
-        public void UpdateTicketStateToClosed_OnNonExistingId_ThrowsKeyNotFoundException()
+        public void UpdateTicketStateToClosedOnNonExistingIdThrowsKeyNotFoundException()
         {
             try
             {
