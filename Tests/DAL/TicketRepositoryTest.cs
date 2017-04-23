@@ -1,13 +1,13 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SC.DAL.EF;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SC.BL.Domain;
 using SC.DAL;
+using SC.DAL.EF;
 
-namespace Tests.EF
+namespace Tests.DAL
 {
     [TestClass]
     public class TicketRepositoryTests
@@ -72,8 +72,6 @@ namespace Tests.EF
 
         [TestMethod]
         public void ReadTicketsAllItemsInReturnedListAreOfTypeTicket() {
-            var tickets = _repo.ReadTickets();
-
             CollectionAssert.AllItemsAreInstancesOfType(_repo.ReadTickets().ToList(), typeof(Ticket));
         }
 
@@ -158,7 +156,7 @@ namespace Tests.EF
             {
                 _repo.DeleteTicket(1);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 Assert.Fail("This should not throw an excepion yet");
             }
