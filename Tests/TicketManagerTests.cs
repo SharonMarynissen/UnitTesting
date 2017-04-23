@@ -101,12 +101,13 @@ namespace Tests
             _repository.Received(1).UpdateTicket(Arg.Is(validTicket));
         }
 
-        [Fact]
-        public void ChangeTicketWithInvalidTicketThrowsValidationException()
+        [Theory, MemberData(nameof(ChangeTicketWithInvalidTicketThrowsValidationExceptionMemberData))]
+        public void ChangeTicketWithInvalidTicketThrowsValidationException(string useCase, string text)
         {
             _repository = Substitute.For<ITicketRepository>();
             _mgr = new TicketManager(_repository);
             Ticket invalidTicket = new Ticket {
+                Text = text,
                 AccountId = 1,
                 TicketNumber = 1,
                 State = TicketState.Open,
@@ -118,7 +119,7 @@ namespace Tests
         }
 
         [Fact]
-        public void ChangeTicketWithNullAsParameterThrowsNullReferenceException()
+        public void ChangeTicketWithNullAsParameterThrowsArgumentNullException()
         {
             _repository = Substitute.For<ITicketRepository>();
             _mgr = new TicketManager(_repository);
@@ -254,6 +255,12 @@ namespace Tests
             yield return new[] { "AddTicketResponseWithEmptyStringAsResponse", "" };
             yield return new[] { "AddTicketResponseWithTooLongStringAsResponse", "This response should be way too long, I have no clue what to type so I just keep typing some random words. Testing with xUnit is a lot easier than testin with MUTF, because you can use a Theory with MemberData that makes it possible to run a test multiple times with different parameters. This comes in handy when testing edge cases." };
             yield return new[] { "AddTicketResponseWithNullAsResponse", null };
+        }
+
+        public static IEnumerable<object[]> ChangeTicketWithInvalidTicketThrowsValidationExceptionMemberData() {
+            yield return new[] { "ChangeTicketWithEmptyStringAsText", "" };
+            yield return new[] { "ChangeTicketWithTooLongStringAsText", "This response should be way too long, I have no clue what to type so I just keep typing some random words. Testing with xUnit is a lot easier than testin with MUTF, because you can use a Theory with MemberData that makes it possible to run a test multiple times with different parameters. This comes in handy when testing edge cases." };
+            yield return new[] { "ChangeTicketWithNullAsText", null };
         }
     }
 }
