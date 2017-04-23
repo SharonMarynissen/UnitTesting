@@ -42,7 +42,7 @@ namespace Tests.EF
         }
 
         [TestMethod]
-        public void CreateTicket_WithNewTicket_AddsTicketToDb()
+        public void CreateTicketWithValidTicketAddsTicketToDb()
         {
             var t = new Ticket()
             {
@@ -76,11 +76,17 @@ namespace Tests.EF
         }
 
         [TestMethod]
-        public void TestReadTickets_ReturnsNonEmptyList_AndAllItemsAreOfTypeTicket()
+        public void ReadTicketsReturnsNonEmptyList()
         {
             var tickets = _repo.ReadTickets();
 
             Assert.IsNotNull(tickets, "Ticket list can not be empty");
+        }
+
+        [TestMethod]
+        public void ReadTicketsAllItemsInReturnedListAreOfTypeTicket() {
+            var tickets = _repo.ReadTickets();
+
             CollectionAssert.AllItemsAreInstancesOfType(_repo.ReadTickets().ToList(), typeof(Ticket));
         }
 
