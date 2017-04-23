@@ -28,7 +28,7 @@ namespace Tests.EF
         }
 
         [TestMethod]
-        public void DropAndCreateDatabase_ShouldNotThrowError()
+        public void DropAndCreateDatabaseShouldNotThrowError()
         {
             try
             {
@@ -58,7 +58,7 @@ namespace Tests.EF
         }
 
         [TestMethod, ExpectedException(typeof(ArgumentNullException))]
-        public void CreateTicket_TicketIsNull_ThrowsException() {
+        public void CreateTicketTicketIsNullThrowsArgumentNullException() {
             _repo.CreateTicket(null);
         }
 
@@ -86,10 +86,10 @@ namespace Tests.EF
             Assert.AreEqual(_repo.ReadTicket(id).Text, expected);
         }
 
-        [TestMethod]
+        [TestMethod, ExpectedException(typeof(KeyNotFoundException))]
         public void ReadTicketWithUnexistingIdReturnsNull()
         {
-            Assert.IsNull(_repo.ReadTicket(int.MaxValue));
+            _repo.ReadTicket(int.MaxValue);
         }
 
         [TestMethod]
@@ -149,6 +149,27 @@ namespace Tests.EF
                 Assert.AreEqual(e.Message, "Ticket not found");
                 throw;
             }
+        }
+
+        [TestMethod, ExpectedException(typeof(KeyNotFoundException))]
+        public void DeleteTicketWithExistingTicketRemovesTicketFromDatabase()
+        {
+            try
+            {
+                _repo.DeleteTicket(1);
+            }
+            catch (Exception e)
+            {
+                Assert.Fail("This should not throw an excepion yet");
+            }
+            _repo.ReadTicket(1);
+            
+        }
+
+        [TestMethod, ExpectedException(typeof(KeyNotFoundException))]
+        public void DeleteTicketWithNonExistingIdThrowsKeyNotFoundException()
+        {
+            _repo.DeleteTicket(Int32.MaxValue);
         }
     }
 }

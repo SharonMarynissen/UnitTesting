@@ -41,7 +41,9 @@ namespace SC.DAL.EF
 
         public Ticket ReadTicket(int ticketNumber)
         {
-            return ctx.Tickets.Find(ticketNumber);
+            Ticket t = ctx.Tickets.Find(ticketNumber);
+            if (t == null) throw new KeyNotFoundException(String.Format("Ticket with id {0} was not found", ticketNumber));
+            return t;
         }
 
         public IEnumerable<TicketResponse> ReadTicketResponsesOfTicket(int ticketNumber)
