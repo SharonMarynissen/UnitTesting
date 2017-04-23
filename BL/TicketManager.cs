@@ -128,7 +128,7 @@ namespace SC.BL
                 return newTicketResponse;
             }
             else
-                throw new ArgumentException("Ticketnumber '" + ticketNumber + "' not found!");
+                throw new KeyNotFoundException("Ticketnumber '" + ticketNumber + "' not found!");
         }
 
         private void Validate(Ticket ticket)

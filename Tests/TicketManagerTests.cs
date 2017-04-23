@@ -81,7 +81,152 @@ namespace Tests
 
         }
 
-//Theory MemberData methods
+        [Fact]
+        public void ChangeTicketWithValidTicketCallsRepositoryUpdateTicket()
+        {
+            _repository = Substitute.For<ITicketRepository>();
+            _mgr = new TicketManager(_repository);
+            Ticket validTicket = new Ticket
+            {
+                Text = "This should be valid",
+                AccountId = 1,
+                TicketNumber = 1,
+                State = TicketState.Open,
+                DateOpened = DateTime.Now,
+                Responses = new List<TicketResponse>()
+            };
+
+            _mgr.ChangeTicket(validTicket);
+
+            _repository.Received(1).UpdateTicket(Arg.Is(validTicket));
+        }
+
+        [Fact]
+        public void ChangeTicketWithInvalidTicketThrowsValidationException()
+        {
+            _repository = Substitute.For<ITicketRepository>();
+            _mgr = new TicketManager(_repository);
+            Ticket invalidTicket = new Ticket {
+                AccountId = 1,
+                TicketNumber = 1,
+                State = TicketState.Open,
+                DateOpened = DateTime.Now,
+                Responses = new List<TicketResponse>()
+            };
+
+            Assert.Throws<ValidationException>(() => _mgr.ChangeTicket(invalidTicket));
+        }
+
+        [Fact]
+        public void ChangeTicketWithNullAsParameterThrowsNullReferenceException()
+        {
+            _repository = Substitute.For<ITicketRepository>();
+            _mgr = new TicketManager(_repository);
+
+            Assert.Throws<ArgumentNullException>(() => _mgr.ChangeTicket(null));
+        }
+
+        [Fact]
+        public void RemoveTicketCallsRepositoryDeleteTicketWithTheSameTicketNumber()
+        {
+            _repository = Substitute.For<ITicketRepository>();
+            _mgr = new TicketManager(_repository);
+
+            _mgr.RemoveTicket(5);
+            _repository.Received(1).DeleteTicket(5);
+        }
+
+        [Fact]
+        public void GetTicketResponsesCallsRepositoryReadTicketResponsesOfTicket()
+        {
+            _repository = Substitute.For<ITicketRepository>();
+            _mgr = new TicketManager(_repository);
+
+            _mgr.GetTicketResponses(5);
+
+            _repository.Received(1).ReadTicketResponsesOfTicket(5);
+        }
+
+        [Fact]
+        public void AddTicketResponseWithInvalidResponseThrowsValidationException()
+        {
+            _repository = Substitute.For<ITicketRepository>();
+            _repository.ReadTicket(5).Returns(new Ticket());
+            _mgr = new TicketManager(_repository);
+
+            Assert.Throws<ValidationException>(() => _mgr.AddTicketResponse(5, "", true));
+        }
+
+        [Fact]
+        public void AddTicketResponseToUnknownTicketThrowsArgumentException()
+        {
+            _repository = Substitute.For<ITicketRepository>();
+            _mgr = new TicketManager(_repository);
+
+            Assert.Throws<KeyNotFoundException>(() => _mgr.AddTicketResponse(0, "Some response", false));
+        }
+
+        [Fact]
+        public void AddTicketResponseWithValidTicketResponseCallsRepoMethodsCreateTicketResponseAndUpdateTicket()
+        {
+            Ticket t = new Ticket
+            {
+                State = TicketState.Answered,
+                Text = "Some fake ticket",
+                AccountId = 23,
+                TicketNumber = 1,
+                DateOpened = DateTime.Now
+            };
+            _repository = Substitute.For<ITicketRepository>();
+            _repository.ReadTicket(1).Returns(t);
+            _mgr = new TicketManager(_repository);
+
+            _mgr.AddTicketResponse(1, "Valid response", false);
+
+            _repository.Received(1).CreateTicketResponse(Arg.Any<TicketResponse>());
+            _repository.Received(1).UpdateTicket(t);
+        }
+
+        [Fact]
+        public void AddTicketResponseWithValidTicketResponseSetsTicketStateToClientAnswerIfItWasAClientResponse()
+        {
+            Ticket t = new Ticket {
+                State = TicketState.Answered,
+                Text = "Some fake ticket",
+                AccountId = 23,
+                TicketNumber = 1,
+                DateOpened = DateTime.Now
+            };
+            _repository = Substitute.For<ITicketRepository>();
+            _repository.ReadTicket(1).Returns(t);
+            _mgr = new TicketManager(_repository);
+
+            _mgr.AddTicketResponse(1, "Valid response", true);
+
+            Assert.Equal(TicketState.ClientAnswer, t.State);
+        }
+
+        [Fact]
+        public void AddTicketResponseWithValidTicketResponseSetsTicketStateToAnsweredIfItWasNotAClientResponse() {
+            Ticket t = new Ticket {
+                State = TicketState.Answered,
+                Text = "Some fake ticket",
+                AccountId = 23,
+                TicketNumber = 1,
+                DateOpened = DateTime.Now
+            };
+            _repository = Substitute.For<ITicketRepository>();
+            _repository.ReadTicket(1).Returns(t);
+            _mgr = new TicketManager(_repository);
+
+            _mgr.AddTicketResponse(1, "Valid response", false);
+
+            Assert.Equal(TicketState.Answered, t.State);
+        }
+
+
+
+        //Theory MemberData methods
         public static IEnumerable<object[]> GetTicketWithIdReturnsExpectedResultMemberData() {
             yield return new object[] { "GetTicketWithId1ReturnsExpectedTicket", 1 };
             yield return new object[] { "GetTicketWithId2ReturnsExpectedTicket", 2 };
