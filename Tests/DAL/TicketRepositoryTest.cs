@@ -169,5 +169,43 @@ namespace Tests.DAL
         {
             _repo.DeleteTicket(Int32.MaxValue);
         }
+
+        [TestMethod]
+        public void ReadTicketResponsesOfTicketWithIdOneReturnsAListOfThreeTicketResponses()
+        {
+            Ticket testTicket = new Ticket
+            {
+                Text = "Test ticket",
+                AccountId = 1,
+                DateOpened = DateTime.Now,
+                State = TicketState.Closed,
+            };
+            TicketResponse tr = new TicketResponse
+            {
+                Date = DateTime.Today.AddDays(1),
+                IsClientResponse = false,
+                Text = "Answer 1",
+                Ticket = testTicket,
+            };
+
+            var id = _repo.CreateTicket(testTicket).TicketNumber;
+            _repo.CreateTicketResponse(tr);
+            List<TicketResponse> result = _repo.ReadTicketResponsesOfTicket(id).ToList();
+
+            CollectionAssert.Contains(result, tr);
+
+        }
+
+        [TestMethod]
+        public void ReadTicketResponsesOfNonExistingTicketReturnsEmptyList()
+        {
+            Assert.AreEqual(0, _repo.ReadTicketResponsesOfTicket(Int32.MaxValue).ToList().Count);
+        }
+
+        [TestMethod, ExpectedException(typeof(ArgumentNullException))]
+        public void CreateTicketResponseWithNullAsTicketResponseThrowsException()
+        {
+            _repo.CreateTicketResponse(null);
+        }
     }
 }
