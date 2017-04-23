@@ -58,6 +58,24 @@ namespace Tests.EF
         }
 
         [TestMethod]
+        public void CreateTicketWithNullAsTicketThrowsException()
+        {
+            try
+            {
+                _repo.CreateTicket(null);
+                Assert.Fail("This should throw an exception, you don't want to add NULL to the database");
+            }
+            catch (AssertFailedException e) //I have to catch this, because this is also an exception!
+            {
+                Assert.Fail("This should throw an exception, you don't want to add NULL to the database");
+            }
+            catch (Exception e)
+            {
+                Assert.IsTrue(true, "An exception was thrown while adding ticket NULL to the database. This is good.");
+            }
+        }
+
+        [TestMethod]
         public void TestReadTickets_ReturnsNonEmptyList_AndAllItemsAreOfTypeTicket()
         {
             var tickets = _repo.ReadTickets();
