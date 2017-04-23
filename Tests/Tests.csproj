@@ -118,7 +118,7 @@
     <Compile Include="Controllers\TicketControllerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DAL\TicketRepositoryTest.cs" />
-    <Compile Include="TicketManagerTests.cs" />
+    <Compile Include="BL\TicketManagerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BL\BL.csproj">
@@ -141,6 +141,9 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="UI-CA\" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

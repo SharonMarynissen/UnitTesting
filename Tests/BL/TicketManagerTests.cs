@@ -1,14 +1,14 @@
 ﻿using System;
-using SC.BL;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
+using SC.BL;
 using SC.BL.Domain;
 using SC.DAL;
 using Xunit;
 
-namespace Tests
+namespace Tests.BL
 {
     public class TicketManagerTests
     {
