@@ -138,15 +138,7 @@ namespace Tests.DAL
         [TestMethod, ExpectedException(typeof(KeyNotFoundException), "This Should throw a NullReferenceException")]
         public void UpdateTicketStateToClosedOnNonExistingIdThrowsKeyNotFoundException()
         {
-            try
-            {
-                _repo.UpdateTicketStateToClosed(Int32.MaxValue);
-            }
-            catch (KeyNotFoundException e)
-            {
-                Assert.AreEqual(e.Message, "Ticket not found");
-                throw;
-            }
+                _repo.UpdateTicketStateToClosed(int.MaxValue);
         }
 
         [TestMethod, ExpectedException(typeof(KeyNotFoundException))]
