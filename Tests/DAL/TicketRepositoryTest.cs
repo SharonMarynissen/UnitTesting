@@ -52,9 +52,9 @@ namespace Tests.DAL
             };
 
             var added = _repo.CreateTicket(t);
-            Assert.AreEqual(t.DateOpened, added.DateOpened);
-            Assert.AreEqual(t.State, added.State);
-            Assert.AreEqual(t.Text, added.Text);
+            Assert.AreEqual(t.DateOpened, added.DateOpened, "Dates should be equal");
+            Assert.AreEqual(t.State, added.State, "States should be equal");
+            Assert.AreEqual(t.Text, added.Text, "Texts should be equal");
         }
 
         [TestMethod, ExpectedException(typeof(ArgumentNullException))]
@@ -81,13 +81,14 @@ namespace Tests.DAL
             var expected = "This should be the message";
             var id = _repo.CreateTicket(new Ticket() { Text = expected, DateOpened = DateTime.Now }).TicketNumber;
 
-            Assert.AreEqual(_repo.ReadTicket(id).Text, expected);
+            Assert.AreEqual(_repo.ReadTicket(id).Text, expected, "Not the correct ticket");
         }
 
         [TestMethod, ExpectedException(typeof(KeyNotFoundException))]
         public void ReadTicketWithUnexistingIdReturnsNull()
         {
             _repo.ReadTicket(int.MaxValue);
+            Assert.Fail("No exception was thrown");
         }
 
         [TestMethod]
@@ -103,7 +104,7 @@ namespace Tests.DAL
             ticketToUpdate.Text = newText;
             _repo.UpdateTicket(ticketToUpdate);
 
-            Assert.AreEqual(_repo.ReadTicket(id).Text, newText);
+            Assert.AreEqual(_repo.ReadTicket(id).Text, newText, "The text wasn't updated");
         }
 
         [TestMethod, ExpectedException(typeof(KeyNotFoundException))]
@@ -118,27 +119,30 @@ namespace Tests.DAL
                 DateOpened = DateTime.Now,
             };
             _repo.UpdateTicket(t);
+            Assert.Fail("No exception was thrown");
         }
 
         [TestMethod, ExpectedException(typeof(ArgumentNullException))]
         public void UpdateTicketTicketIsNullThrowsArgumentNullException()
         {
             _repo.UpdateTicket(null);
+            Assert.Fail("No exception was thronw");
         }
 
         [TestMethod]
         public void UpdateTicketStateToClosedOnExistingTicketSetsStateToClosed()
         {
             var id = _repo.CreateTicket(new Ticket() { DateOpened = DateTime.Now, Text = "Some text" }).TicketNumber;
-            Assert.AreNotEqual(_repo.ReadTicket(id).State, TicketState.Closed);
+            Assert.AreNotEqual(_repo.ReadTicket(id).State, TicketState.Closed, "Ticketstate should not be closed yet");
             _repo.UpdateTicketStateToClosed(id);
-            Assert.AreEqual(_repo.ReadTicket(id).State, TicketState.Closed);
+            Assert.AreEqual(_repo.ReadTicket(id).State, TicketState.Closed, "Ticketstate should be closed");
         }
 
         [TestMethod, ExpectedException(typeof(KeyNotFoundException), "This Should throw a NullReferenceException")]
         public void UpdateTicketStateToClosedOnNonExistingIdThrowsKeyNotFoundException()
         {
                 _repo.UpdateTicketStateToClosed(int.MaxValue);
+
         }
 
         [TestMethod, ExpectedException(typeof(KeyNotFoundException))]
@@ -153,13 +157,14 @@ namespace Tests.DAL
                 Assert.Fail("This should not throw an excepion yet");
             }
             _repo.ReadTicket(1);
-            
+            Assert.Fail("Reading ticket that is not in database should throw an exception");     
         }
 
         [TestMethod, ExpectedException(typeof(KeyNotFoundException))]
         public void DeleteTicketWithNonExistingIdThrowsKeyNotFoundException()
         {
             _repo.DeleteTicket(Int32.MaxValue);
+            Assert.Fail("No exception was thrown when removing a non excisting ticket");
         }
 
         [TestMethod]
@@ -172,6 +177,7 @@ namespace Tests.DAL
                 DateOpened = DateTime.Now,
                 State = TicketState.Closed,
             };
+
             TicketResponse tr = new TicketResponse
             {
                 Date = DateTime.Today.AddDays(1),
@@ -184,20 +190,20 @@ namespace Tests.DAL
             _repo.CreateTicketResponse(tr);
             List<TicketResponse> result = _repo.ReadTicketResponsesOfTicket(id).ToList();
 
-            CollectionAssert.Contains(result, tr);
-
+            CollectionAssert.Contains(result, tr, "The ticket response is not in the list");
         }
 
         [TestMethod]
         public void ReadTicketResponsesOfNonExistingTicketReturnsEmptyList()
         {
-            Assert.AreEqual(0, _repo.ReadTicketResponsesOfTicket(Int32.MaxValue).ToList().Count);
+            Assert.AreEqual(0, _repo.ReadTicketResponsesOfTicket(Int32.MaxValue).ToList().Count, "The size of the list should be 0");
         }
 
         [TestMethod, ExpectedException(typeof(ArgumentNullException))]
         public void CreateTicketResponseWithNullAsTicketResponseThrowsException()
         {
             _repo.CreateTicketResponse(null);
+            Assert.Fail("No exception was thrown");
         }
     }
 }

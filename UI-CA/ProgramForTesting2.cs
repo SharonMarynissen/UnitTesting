@@ -19,8 +19,8 @@ namespace SC.UI.CA
             Ticket t = mgr.GetTicket(1);
             if (t != null)
                 Console.WriteLine("Ticket {0} has not been removed!");
-
-            Console.WriteLine("Ticket has been removed!\n");
+            else
+                Console.WriteLine("Ticket has been removed!\n");
 
             PrintAllTickets();
             Console.ReadLine();
