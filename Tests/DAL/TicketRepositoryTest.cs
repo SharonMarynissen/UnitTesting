@@ -74,40 +74,50 @@ namespace Tests.DAL
         [TestMethod]
         public void ReadTicketsReturnsNonEmptyList()
         {
+            //Act
             var tickets = _repo.ReadTickets();
 
+            //Assert
             Assert.IsNotNull(tickets, "Ticket list can not be empty");
         }
 
         [TestMethod]
         public void ReadTicketsAllItemsInReturnedListAreOfTypeTicket() {
+            //Act and Assert
             CollectionAssert.AllItemsAreInstancesOfType(_repo.ReadTickets().ToList(), typeof(Ticket));
         }
 
         [TestMethod]
         public void ReadTicketWithExistingIdReturnsExcpectedTicket()
         {
+            //Act
             var expected = "This should be the message";
             var id = _repo.CreateTicket(new Ticket() { Text = expected, DateOpened = DateTime.Now }).TicketNumber;
 
+            //Assert
             Assert.AreEqual(_repo.ReadTicket(id).Text, expected, "Not the correct ticket");
         }
 
         [TestMethod, ExpectedException(typeof(KeyNotFoundException))]
         public void ReadTicketWithUnexistingIdReturnsNull()
         {
+            //Act
             _repo.ReadTicket(int.MaxValue);
+
+            //Assert
             Assert.Fail("No exception was thrown");
         }
 
         [TestMethod]
         public void UpdateTicketUpdateExistingTicketTextOfTicketIsUpdatedToNewValueAfterUpdate()
         {
+            //Act
             var originalText = "This was the original message";
             var newText = "This is the new message";
             var date = DateTime.Now;
             var id = _repo.CreateTicket(new Ticket() { DateOpened = date, Text = originalText }).TicketNumber;
             var ticketToUpdate = _repo.ReadTicket(id);
+
 
             Assert.AreEqual(ticketToUpdate.Text, originalText);
             ticketToUpdate.Text = newText;

@@ -36,6 +36,7 @@ namespace Tests.DAL
             Assert.Equal(t.Text, added.Text);
         }
 
+        //Werkt nog niet correct!
         [Fact]
         public void CreateTicketTicketIsNullThrowsArgumentNullException()
         {
