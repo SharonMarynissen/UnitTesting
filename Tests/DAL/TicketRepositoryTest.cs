@@ -9,11 +9,13 @@ using SC.DAL.EF;
 
 namespace Tests.DAL
 {
+    //Test class for TicketRepository written with the Microsof Unit Testing Framework
     [TestClass]
     public class TicketRepositoryTests
     {
         private ITicketRepository _repo;
 
+        //This is the arrange for all of the methods used in this class
         [TestInitialize]
         public void SetUp()
         {
@@ -44,6 +46,7 @@ namespace Tests.DAL
         [TestMethod]
         public void CreateTicketWithValidTicketAddsTicketToDb()
         {
+            //Act
             var t = new Ticket()
             {
                 DateOpened = DateTime.Now,
@@ -52,6 +55,8 @@ namespace Tests.DAL
             };
 
             var added = _repo.CreateTicket(t);
+
+            //Assert
             Assert.AreEqual(t.DateOpened, added.DateOpened, "Dates should be equal");
             Assert.AreEqual(t.State, added.State, "States should be equal");
             Assert.AreEqual(t.Text, added.Text, "Texts should be equal");
@@ -59,7 +64,11 @@ namespace Tests.DAL
 
         [TestMethod, ExpectedException(typeof(ArgumentNullException))]
         public void CreateTicketTicketIsNullThrowsArgumentNullException() {
+            //Act
             _repo.CreateTicket(null);
+
+            //Assert
+            Assert.Fail("No exception was thrown");
         }
 
         [TestMethod]
