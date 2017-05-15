@@ -12,7 +12,7 @@ namespace Tests.DAL
     //Test class for TicketRepository written with the Microsof Unit Testing Framework
     //All of the methods are based on the fact that TicketRepository has a seeding method and thus contains Tickets and TicketResponses
     [TestClass]
-    public class TicketRepositoryTests
+    public class TicketRepositoryMSTest
     {
         private ITicketRepository _repo;
 

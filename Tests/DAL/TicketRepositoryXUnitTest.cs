@@ -37,7 +37,6 @@ namespace Tests.DAL
             Assert.Equal(t.Text, added.Text);
         }
 
-        //Werkt nog niet correct!
         [Fact]
         public void CreateTicketTicketIsNullThrowsArgumentNullException()
         {
@@ -91,8 +90,7 @@ namespace Tests.DAL
             //Assert
             Assert.Equal(_repo.ReadTicket(id).Text, expected);
         }
-
-        //Werkt niet
+        
         [Fact]
         public void ReadTicketWithUnexistingIdReturnsNull()
         {
@@ -185,7 +183,7 @@ namespace Tests.DAL
             Assert.Throws<KeyNotFoundException>(() =>_repo.UpdateTicketStateToClosed(0));
         }
 
-        //Werkt niet en geen idee hoe de try catch te doen
+        //Geen idee hoe de try catch te doen
         [Fact]
         public void DeleteTicketWithExistingTicketRemovesTicketFromDatabase()
         {
@@ -276,6 +274,5 @@ namespace Tests.DAL
             //Assert
             Assert.Throws<ArgumentNullException>(() => _repo.CreateTicketResponse(null));
         }
-
     }
 }

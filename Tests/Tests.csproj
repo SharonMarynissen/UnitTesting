@@ -121,7 +121,7 @@
     <Compile Include="Controllers\TicketControllerTests.cs" />
     <Compile Include="DAL\TicketRepositoryXUnitTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="DAL\TicketRepositoryTest.cs" />
+    <Compile Include="DAL\TicketRepositoryMsTest.cs" />
     <Compile Include="BL\TicketManagerTests.cs" />
   </ItemGroup>
   <ItemGroup>
