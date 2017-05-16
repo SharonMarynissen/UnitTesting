@@ -30,7 +30,7 @@ namespace Tests.DAL
 
             //Act
             Ticket added = _repo.CreateTicket(t);
-
+            
             //Assert
             Assert.Equal(t.DateOpened, added.DateOpened);
             Assert.Equal(t.State, added.State);
