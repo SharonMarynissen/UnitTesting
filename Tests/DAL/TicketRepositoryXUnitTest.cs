@@ -15,12 +15,16 @@ namespace Tests.DAL
     {
         private ITicketRepository _repo;
 
+        public TicketRepositoryXUnitTest()
+        {
+            _repo = new TicketRepository();
+            _repo.ClearDatabase();
+        }
+
         [Fact]
         public void CreateTicketWithValidTicketAddsTicketToDb()
         {
             //Arrange
-            _repo = new TicketRepository();
-       
             Ticket t = new Ticket()
             {
                 DateOpened = DateTime.Now,
@@ -32,6 +36,7 @@ namespace Tests.DAL
             Ticket added = _repo.CreateTicket(t);
             
             //Assert
+            Assert.Contains(t, _repo.ReadTickets());
             Assert.Equal(t.DateOpened, added.DateOpened);
             Assert.Equal(t.State, added.State);
             Assert.Equal(t.Text, added.Text);
@@ -40,27 +45,18 @@ namespace Tests.DAL
         [Fact]
         public void CreateTicketTicketIsNullThrowsArgumentNullException()
         {
-            //Arrange
-            _repo = new TicketRepository();
-
-            //Act
-            //var create = _repo.CreateTicket(null);
-
-            //Assert
+            //Act + Assert
             Assert.Throws<ArgumentNullException>(() => _repo.CreateTicket(null));
         }
 
         [Fact]
         public void ReadTicketsReturnsNonEmptyList()
         {
-            //Arrange
-            _repo = new TicketRepository();
-
             //Act
             var tickets = _repo.ReadTickets();
 
             //Assert
-            Assert.NotEmpty(tickets);
+            Assert.Empty(tickets);
         }
 
         //Weet niet welke assert te gebruiken
@@ -68,23 +64,45 @@ namespace Tests.DAL
         public void ReadTicketsAllItemsInReturnedListAreOfTypeTicket()
         {
             //Arragnge
-            _repo = new TicketRepository();
+            _repo.CreateTicket(new Ticket
+            {
+                Text = "Dummy ticket",
+                AccountId = 1,
+                State = TicketState.Answered,
+                DateOpened = DateTime.Now
+            });
+
+            _repo.CreateTicket(new Ticket
+            {
+                Text = "Dummy ticket 2",
+                AccountId = 2,
+                State = TicketState.Answered,
+                DateOpened = DateTime.Now
+            });
+
+            _repo.CreateTicket(new HardwareTicket()
+            {
+                DeviceName = "PC-1234",
+                Text = "Dummy ticket",
+                AccountId = 1,
+                State = TicketState.Answered,
+                DateOpened = DateTime.Now
+            });
 
             //Act 
             var tickets = _repo.ReadTickets().ToList();
 
             //Assert
-            
+            tickets.ForEach(t=>Assert.IsAssignableFrom<Ticket>(t));
         }
 
         [Fact]
         public void ReadTicketWithExistingIdReturnsExcpectedTicket()
         {
             //Arrange
-            _repo = new TicketRepository();
+            String expected = "This should be the message";
 
             //Act
-            String expected = "This should be the message";
             var id = _repo.CreateTicket(new Ticket() { Text = expected, DateOpened = DateTime.Now }).TicketNumber;
 
             //Assert
@@ -105,16 +123,13 @@ namespace Tests.DAL
         public void UpdateTicketUpdateExistingTicketTextOfTicketIsUpdatedToNewValueAfterUpdate()
         {
             //Arrange
-            _repo = new TicketRepository();
-
-            //Act
             var originalText = "This was the original message";
             var newText = "This is the new message";
             var date = DateTime.Now;
             var id = _repo.CreateTicket(new Ticket() { DateOpened = date, Text = originalText }).TicketNumber;
             var ticketToUpdate = _repo.ReadTicket(id);
 
-            //Assert
+            //Assert (to verify starting conditions)
             Assert.Equal(ticketToUpdate.Text, originalText);
 
             //Act
@@ -128,9 +143,7 @@ namespace Tests.DAL
         [Fact]
         public void UpdateTicketNonExistingTicketThrowsKeyNotFoundException()
         {
-            //Arrange
-            _repo = new TicketRepository();
-            
+            //Arrange           
             Ticket t = new Ticket
             {
                 TicketNumber = Int32.MaxValue,
@@ -146,10 +159,7 @@ namespace Tests.DAL
 
         [Fact]
         public void UpdateTicketTicketIsNullThrowsArgumentNullException()
-        {
-            //Arrange
-            _repo = new TicketRepository();
-            
+        {           
             //Assert and act           
             Assert.Throws<ArgumentNullException>(() => _repo.UpdateTicket(null));
         }
@@ -158,12 +168,9 @@ namespace Tests.DAL
         public void UpdateTicketStateToClosedOnExistingTicketSetsStateToClosed()
         {
             //Arrange
-            _repo = new TicketRepository();
-
-            //Act
             var id = _repo.CreateTicket(new Ticket() { DateOpened = DateTime.Now, Text = "Some text" }).TicketNumber;
 
-            //Assert
+            //Assert (to verify starting conditions)
             Assert.NotEqual(_repo.ReadTicket(id).State, TicketState.Closed);
 
             //Act
@@ -176,9 +183,6 @@ namespace Tests.DAL
         [Fact]
         public void UpdateTicketStateToClosedOnNonExistingIdThrowsKeyNotFoundException()
         {
-            //Arrange
-            _repo = new TicketRepository();
-
             //Assert and act
             Assert.Throws<KeyNotFoundException>(() =>_repo.UpdateTicketStateToClosed(0));
         }
@@ -188,42 +192,34 @@ namespace Tests.DAL
         public void DeleteTicketWithExistingTicketRemovesTicketFromDatabase()
         {
             //Arrange
-            _repo = new TicketRepository();
+            int id = _repo.CreateTicket(new Ticket {
+                Text = "Dummy ticket",
+                AccountId = 1,
+                State = TicketState.Answered,
+                DateOpened = DateTime.Now
+            }).TicketNumber;
+
+            //Verify starting conditions
+            Assert.NotNull(_repo.ReadTicket(id));
 
             //Act
-            try
-            {
-                _repo.DeleteTicket(1);
-            }
-            catch (Exception)
-            {
-                //Assert.Fail("This should not throw an excepion yet");
-            }
-            //_repo.ReadTicket(1);
+            _repo.DeleteTicket(id);
 
             //Assert
-            Assert.Throws<KeyNotFoundException>(() =>_repo.ReadTicket(1));
+            Assert.Throws<KeyNotFoundException>(()=>_repo.ReadTicket(id));
         }
 
         [Fact]
         public void DeleteTicketWithNonExistingIdThrowsKeyNotFoundException()
         {
-            //Arrange
-            _repo = new TicketRepository();
-
-            //Act
-            //_repo.DeleteTicket(0);
-
-            //Assert
+            //Act + Assert
             Assert.Throws<KeyNotFoundException>(() => _repo.DeleteTicket(0));
         }
 
         [Fact]
-        public void ReadTicketResponsesOfTicketWithIdOneReturnsAListOfThreeTicketResponses()
+        public void ReadTicketResponsesOfTicketWithIdOneReturnsAListOfTicketResponses()
         {
             //Arrange
-            _repo = new TicketRepository();
-
             Ticket testTicket = new Ticket
             {
                 Text = "Test ticket",
@@ -239,10 +235,10 @@ namespace Tests.DAL
                 Text = "Answer 1",
                 Ticket = testTicket,
             };
-
-            //Act
             var id = _repo.CreateTicket(testTicket).TicketNumber;
             _repo.CreateTicketResponse(tr);
+
+            //Act
             List<TicketResponse> result = _repo.ReadTicketResponsesOfTicket(id).ToList();
 
             //Assert
@@ -252,9 +248,6 @@ namespace Tests.DAL
         [Fact]
         public void ReadTicketResponsesOfNonExistingTicketReturnsEmptyList()
         {
-            //Arrange
-            _repo = new TicketRepository();
-
             //Act
             var tickets = _repo.ReadTicketResponsesOfTicket(0).ToList();
 
@@ -265,13 +258,7 @@ namespace Tests.DAL
         [Fact]
         public void CreateTicketResponseWithNullAsTicketResponseThrowsException()
         {
-            //Arrange
-            _repo = new TicketRepository();
-
-            //Act
-            //_repo.CreateTicketResponse(null);
-
-            //Assert
+            //Act + Assert
             Assert.Throws<ArgumentNullException>(() => _repo.CreateTicketResponse(null));
         }
     }

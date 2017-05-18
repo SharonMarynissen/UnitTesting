@@ -34,6 +34,19 @@ namespace Tests.BL
             Assert.Equal(t, _mgr.GetTicket(id));
         }
 
+        [Theory]
+        [InlineData("GetTicketWithId1ReturnsExpectedTicket", 1)]
+        [InlineData("GetTicketWithId1ReturnsExpectedTicket", 2)]
+        [InlineData("GetTicketWithId1ReturnsExpectedTicket", 3)]
+        [InlineData("GetTicketWithId1ReturnsExpectedTicket", 4)]
+        public void GetTicketWithCorrectIdReturnsExpectedResultWithInlineData(string useCase, int id) {
+            Ticket t = new Ticket();
+            _repository = Substitute.For<ITicketRepository>();
+            _repository.ReadTicket(id).ReturnsForAnyArgs(t);
+            _mgr = new TicketManager(_repository);
+            Assert.Equal(t, _mgr.GetTicket(id));
+        }
+
         [Theory, MemberData(nameof(GetTicketWithIdReturnsExpectedResultMemberData))]
         public void GetTicketWithUnknownIdThrowsException(string useCase, int id)
         {

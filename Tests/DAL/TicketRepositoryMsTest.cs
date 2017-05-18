@@ -210,7 +210,7 @@ namespace Tests.DAL
         }
 
         [TestMethod]
-        public void ReadTicketResponsesOfTicketWithIdOneReturnsAListOfThreeTicketResponses()
+        public void ReadTicketResponsesOfTicketWithIdOneReturnsAListOfTicketResponses()
         {
             //Arrange
             Ticket testTicket = new Ticket
@@ -232,7 +232,7 @@ namespace Tests.DAL
             //Act
             var id = _repo.CreateTicket(testTicket).TicketNumber;
             _repo.CreateTicketResponse(tr);
-            List<TicketResponse> result = _repo.ReadTicketResponsesOfTicket(id).ToList();
+            var result = _repo.ReadTicketResponsesOfTicket(id).ToList();
 
             //Assert
             CollectionAssert.Contains(result, tr, "The ticket response is not in the list");
