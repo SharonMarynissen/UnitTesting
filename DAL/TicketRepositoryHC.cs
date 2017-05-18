@@ -160,6 +160,11 @@ namespace SC.DAL
           ReadTicket(ticketNumber).State=TicketState.Closed;
       }
 
+      public void ClearDatabase()
+      {
+          throw new NotImplementedException();
+      }
+
       #endregion
   }
 }

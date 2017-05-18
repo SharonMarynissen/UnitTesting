@@ -13,7 +13,7 @@ using SC.BL.Domain;
 namespace SC.DAL.EF
 {
     [DbConfigurationType(typeof(SupportCenterDbConfiguration))]
-    internal class SupportCenterDbContext : DbContext /* 'public' for testing with project 'DAL-Testing'! */
+    internal class SupportCenterDbContext : DbContext 
     {
         public SupportCenterDbContext()
           : base("SupportCenterDB_EFCodeFirst")

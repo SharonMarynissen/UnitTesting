@@ -76,5 +76,13 @@ namespace SC.DAL.EF
             }
             _ctx.SaveChanges();
         }
+
+        public void ClearDatabase()
+        {
+            _ctx.TicketResponses.RemoveRange(_ctx.TicketResponses);
+            _ctx.Tickets.RemoveRange(_ctx.Tickets);
+            _ctx.HardwareTickets.RemoveRange(_ctx.HardwareTickets);
+            _ctx.SaveChanges();
+        }
     }
 }

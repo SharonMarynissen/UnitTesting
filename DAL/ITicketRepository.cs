@@ -10,6 +10,9 @@ namespace SC.DAL
 {
     public interface ITicketRepository
     {
+        #region Database
+        void ClearDatabase();
+        #endregion
         #region Ticket
         IEnumerable<Ticket> ReadTickets();
         // CRUD Ticket

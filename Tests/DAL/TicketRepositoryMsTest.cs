@@ -10,40 +10,16 @@ using SC.DAL.EF;
 namespace Tests.DAL
 {
     //Test class for TicketRepository written with the Microsof Unit Testing Framework
-    //All of the methods are based on the fact that TicketRepository has a seeding method and thus contains Tickets and TicketResponses
     [TestClass]
-    public class TicketRepositoryMSTest
+    public class TicketRepositoryMsTest
     {
-        private ITicketRepository _repo;
+        private ITicketRepository _repo = new TicketRepository();
 
         //This is the arrange for all of the methods used in this class
         [TestInitialize]
         public void SetUp()
         {
-            _repo = new TicketRepository();
-        }
-
-        [TestCleanup]
-        public void TearDown()
-        {
-            _repo = null;
-            SqlConnection.ClearAllPools();
-        }
-
-        //Ik zou deze verwijderen. Dit is niet echt het testen van een drop en create maar het op null zetten en het creëeren
-        //-> creatie wordt zowiezo al gedaan in setup dus is logisch dat dit lukt
-        [TestMethod]
-        public void DropAndCreateDatabaseShouldNotThrowError()
-        {
-            try
-            {
-                _repo = null;
-                _repo = new TicketRepository();
-            }
-            catch (Exception e)
-            {
-                Assert.Fail(e.Message);
-            }
+            _repo.ClearDatabase(); //This method is created to clear the database. This should make us independent from te Seed implementation!
         }
 
         [TestMethod]
@@ -75,15 +51,18 @@ namespace Tests.DAL
             Assert.Fail("No exception was thrown");
         }
 
-        //We use the seed method of TicketRepository, so _repo should contain tickets
         [TestMethod]
-        public void ReadTicketsReturnsNonEmptyList()
+        public void ReadTicketsReturnsEmptyList()
         {
+            //No arrange needed. Initialization has been done in TestInitialize
             //Act
             var tickets = _repo.ReadTickets();
 
             //Assert
-            Assert.AreNotEqual(0, tickets.Count(), 0.0, "Ticket list can not be empty");
+            Assert.IsNotNull(tickets);
+            Assert.IsInstanceOfType(tickets, typeof(IEnumerable<Ticket>));
+            Assert.IsFalse(tickets.Any());
+            Assert.AreEqual(0, tickets.Count(), 0.0, "Ticket list should be empty");
         }
 
         [TestMethod]
@@ -98,11 +77,11 @@ namespace Tests.DAL
         [TestMethod]
         public void ReadTicketWithExistingIdReturnsExcpectedTicket()
         {
-            //Act
+            //Arrange
             string expected = "This should be the message";
             var id = _repo.CreateTicket(new Ticket() { Text = expected, DateOpened = DateTime.Now }).TicketNumber;
 
-            //Assert
+            //Act + Assert at once
             Assert.AreEqual(_repo.ReadTicket(id).Text, expected, "Not the correct ticket");
         }
 
@@ -119,14 +98,14 @@ namespace Tests.DAL
         [TestMethod]
         public void UpdateTicketUpdateExistingTicketTextOfTicketIsUpdatedToNewValueAfterUpdate()
         {
-            //Act
+            //Arrange
             var originalText = "This was the original message";
             var newText = "This is the new message";
             var date = DateTime.Now;
             var id = _repo.CreateTicket(new Ticket() { DateOpened = date, Text = originalText }).TicketNumber;
             var ticketToUpdate = _repo.ReadTicket(id);
 
-            //Assert
+            //Assert (to verify starting conditions)
             Assert.AreEqual(ticketToUpdate.Text, originalText);
             
             //Act
@@ -170,10 +149,10 @@ namespace Tests.DAL
         [TestMethod]
         public void UpdateTicketStateToClosedOnExistingTicketSetsStateToClosed()
         {
-            //Act
+            //Arrange
             var id = _repo.CreateTicket(new Ticket() { DateOpened = DateTime.Now, Text = "Some text" }).TicketNumber;
 
-            //Assert
+            //Assert (to verify starting conditions)
             Assert.AreNotEqual(_repo.ReadTicket(id).State, TicketState.Closed, "Ticketstate should not be closed yet");
 
             //Act
@@ -196,16 +175,25 @@ namespace Tests.DAL
         [TestMethod, ExpectedException(typeof(KeyNotFoundException))]
         public void DeleteTicketWithExistingTicketRemovesTicketFromDatabase()
         {
+            //Arrange
+            int id = _repo.CreateTicket(new Ticket
+            {
+                Text = "Dummy ticket",
+                AccountId = 1,
+                State = TicketState.Open,
+                DateOpened = DateTime.Today
+            }).TicketNumber;
+
             //Act
             try
             {
-                _repo.DeleteTicket(1);
+                _repo.DeleteTicket(id);
             }
             catch (Exception)
             {
                 Assert.Fail("This should not throw an excepion yet");
             }
-            _repo.ReadTicket(1);
+            _repo.ReadTicket(id);
 
             //Assert
             Assert.Fail("Reading ticket that is not in database should throw an exception");     
