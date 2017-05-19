@@ -10,7 +10,6 @@ using System.Linq;
 namespace Tests.DAL
 {
     //Test class for the TicketRepository written with the XUnit Testing Framework
-    //All of the methods are based on the fact that TicketRepository has a seeding method and thus contains Tickets and TicketResponses
     public class TicketRepositoryXUnitTest
     {
         private ITicketRepository _repo;
@@ -59,7 +58,6 @@ namespace Tests.DAL
             Assert.Empty(tickets);
         }
 
-        //Weet niet welke assert te gebruiken
         [Fact]
         public void ReadTicketsAllItemsInReturnedListAreOfTypeTicket()
         {

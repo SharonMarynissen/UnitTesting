@@ -24,8 +24,9 @@ namespace Tests.BL
             _repository.Received(1).ReadTickets();
         }
 
-        [Theory, MemberData(nameof(GetTicketWithIdReturnsExpectedResultMemberData))]
-        public void GetTicketWithCorrectIdReturnsExpectedResult(string useCase, int id)
+        [Theory] 
+        [MemberData(nameof(GetTicketWithIdReturnsExpectedResultMemberData))]
+        public void GetTicketWithCorrectIdReturnsExpectedResult(int id)
         {
             Ticket t = new Ticket();
             _repository = Substitute.For<ITicketRepository>();
@@ -35,11 +36,11 @@ namespace Tests.BL
         }
 
         [Theory]
-        [InlineData("GetTicketWithId1ReturnsExpectedTicket", 1)]
-        [InlineData("GetTicketWithId1ReturnsExpectedTicket", 2)]
-        [InlineData("GetTicketWithId1ReturnsExpectedTicket", 3)]
-        [InlineData("GetTicketWithId1ReturnsExpectedTicket", 4)]
-        public void GetTicketWithCorrectIdReturnsExpectedResultWithInlineData(string useCase, int id) {
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        [InlineData(4)]
+        public void GetTicketWithCorrectIdReturnsExpectedResultWithInlineData(int id) {
             Ticket t = new Ticket();
             _repository = Substitute.For<ITicketRepository>();
             _repository.ReadTicket(id).ReturnsForAnyArgs(t);
@@ -47,8 +48,9 @@ namespace Tests.BL
             Assert.Equal(t, _mgr.GetTicket(id));
         }
 
-        [Theory, MemberData(nameof(GetTicketWithIdReturnsExpectedResultMemberData))]
-        public void GetTicketWithUnknownIdThrowsException(string useCase, int id)
+        [Theory]
+        [MemberData(nameof(GetTicketWithIdReturnsExpectedResultMemberData))]
+        public void GetTicketWithUnknownIdThrowsException(int id)
         {
             _repository = Substitute.For<ITicketRepository>();
             _repository.ReadTicket(Arg.Any<int>()).ReturnsNullForAnyArgs();
@@ -85,7 +87,7 @@ namespace Tests.BL
         }
 
         [Theory, MemberData(nameof(AddTicketWithInvalidQuestionThrowsValidationExceptionMemberData))]
-        public void AddTicketWithInvalidQuestionThrowsValidationException(string useCase, string question)
+        public void AddTicketWithInvalidQuestionThrowsValidationException(string question)
         {
             _repository = Substitute.For<ITicketRepository>();
             _mgr = new TicketManager(_repository);
@@ -115,7 +117,7 @@ namespace Tests.BL
         }
 
         [Theory, MemberData(nameof(ChangeTicketWithInvalidTicketThrowsValidationExceptionMemberData))]
-        public void ChangeTicketWithInvalidTicketThrowsValidationException(string useCase, string text)
+        public void ChangeTicketWithInvalidTicketThrowsValidationException(string text)
         {
             _repository = Substitute.For<ITicketRepository>();
             _mgr = new TicketManager(_repository);
@@ -161,8 +163,9 @@ namespace Tests.BL
             _repository.Received(1).ReadTicketResponsesOfTicket(5);
         }
 
-        [Theory, MemberData(nameof(AddTicketResponseWithInvalidResponseThrowsValidationExceptionMemberData))]
-        public void AddTicketResponseWithInvalidResponseThrowsValidationException(string useCase, string response)
+        [Theory] 
+        [MemberData(nameof(AddTicketResponseWithInvalidResponseThrowsValidationExceptionMemberData))]
+        public void AddTicketResponseWithInvalidResponseThrowsValidationException(string response)
         {
             _repository = Substitute.For<ITicketRepository>();
             _repository.ReadTicket(5).Returns(new Ticket());
@@ -239,41 +242,40 @@ namespace Tests.BL
         }
 
 
-
         //Theory MemberData methods
         public static IEnumerable<object[]> GetTicketWithIdReturnsExpectedResultMemberData() {
-            yield return new object[] { "GetTicketWithId1ReturnsExpectedTicket", 1 };
-            yield return new object[] { "GetTicketWithId2ReturnsExpectedTicket", 2 };
-            yield return new object[] { "GetTicketWithId3ReturnsExpectedTicket", 3 };
-            yield return new object[] { "GetTicketWithId4ReturnsExpectedTicket", 4 };
-            yield return new object[] { "GetTicketWithId5ReturnsExpectedTicket", 5 };
+            yield return new object[] { 1 };
+            yield return new object[] { 2 };
+            yield return new object[] { 3 };
+            yield return new object[] { 4 };
+            yield return new object[] { 5 };
         }
 
         public static IEnumerable<object[]> AddTicketWithAccountIdAndQuestionReturnsNewTicketMemberData()
         {
-            yield return new object[] { "Dit is een stomme vraag", 1};
-            yield return new object[] { "Dit is ook een stomme vraag", 1 };
-            yield return new object[] { "Dit is ook een stomme vraag", 15 };
-            yield return new object[] { "Dit is ook een stomme vraag", 0 };
+            yield return new object[] { "This is a stupid question", 1};
+            yield return new object[] { "This is also a stupid question", 1 };
+            yield return new object[] { "This is also a stupid question", 15 };
+            yield return new object[] { "This is also a stupid question", 0 };
         }
 
         public static IEnumerable<object[]> AddTicketWithInvalidQuestionThrowsValidationExceptionMemberData() {
-            yield return new object[] { "AddTicketWithTooLongQuestionThrowsValidationException","Deze vraag is hoe dan ook veel te lang en zou daarom een validatiefout moeten opgooien. Ik ben eens nieuwsgierig of dit inderdaad het geval zal zijn, maar het zou eigenlijk wel moeten." };
-            yield return new object[] { "AddTicketWithEmptyStringAsQuestionThrowsValidationException","" };
-            yield return new object[] { "AddTicketWithNullAsQuestionThrowsValidationException",null };
+            yield return new object[] { "This question is way to long and because of that it should throw a validation error. I am curious or this will be the case indeed, but it actually should." };          
+            yield return new object[] { "" };
+            yield return new object[] { null };
         }
 
         public static IEnumerable<object[]> AddTicketResponseWithInvalidResponseThrowsValidationExceptionMemberData()
         {
-            yield return new[] { "AddTicketResponseWithEmptyStringAsResponse", "" };
-            yield return new[] { "AddTicketResponseWithTooLongStringAsResponse", "This response should be way too long, I have no clue what to type so I just keep typing some random words. Testing with xUnit is a lot easier than testin with MUTF, because you can use a Theory with MemberData that makes it possible to run a test multiple times with different parameters. This comes in handy when testing edge cases." };
-            yield return new[] { "AddTicketResponseWithNullAsResponse", null };
+            yield return new object[] { "" };
+            yield return new object[] { "This response should be way too long, I have no clue what to type so I just keep typing some random words. Testing with xUnit is a lot easier than testin with MS UTF, because you can use a Theory with MemberData that makes it possible to run a test multiple times with different parameters. This comes in handy when testing edge cases." };
+            yield return new object[] { null };
         }
 
         public static IEnumerable<object[]> ChangeTicketWithInvalidTicketThrowsValidationExceptionMemberData() {
-            yield return new[] { "ChangeTicketWithEmptyStringAsText", "" };
-            yield return new[] { "ChangeTicketWithTooLongStringAsText", "This response should be way too long, I have no clue what to type so I just keep typing some random words. Testing with xUnit is a lot easier than testin with MUTF, because you can use a Theory with MemberData that makes it possible to run a test multiple times with different parameters. This comes in handy when testing edge cases." };
-            yield return new[] { "ChangeTicketWithNullAsText", null };
+            yield return new object[] { "" };
+            yield return new object[] { "This response should be way too long, I have no clue what to type so I just keep typing some random words. Testing with xUnit is a lot easier than testin with MUTF, because you can use a Theory with MemberData that makes it possible to run a test multiple times with different parameters. This comes in handy when testing edge cases." };
+            yield return new object[] { null };
         }
     }
 }
